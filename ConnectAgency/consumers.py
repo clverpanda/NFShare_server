@@ -11,7 +11,9 @@ def http_consumer(message):
 
 
 def ws_connect(message):
-
+    message.reply_channel.send({
+        "text": message.content['text'],
+    })
 
 
 def ws_message(message):
@@ -23,5 +25,6 @@ def ws_message(message):
 
 
 def ws_disconnect(message):
-
-
+    message.reply_channel.send({
+        "text": message.content['text'],
+    })
