@@ -15,7 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from coordinate import views
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^$', views.index, name='index'),
+    url(r'^share/$', views.add_share, name='share'),
+    url(r'^get/(?P<share_pin>[0-9]+)/$', views.get_share, name='get'),
+    url(r'^unavailable/(?P<transfer_id>[0-9]+)/$', views.connect_unavailable, name='unavailable'),
 ]
