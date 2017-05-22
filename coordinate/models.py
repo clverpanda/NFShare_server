@@ -9,7 +9,8 @@ class Transfer(models.Model):
     data_type = models.IntegerField(null=True)
     related_data = models.CharField(max_length=5000, null=True)
     ip = models.CharField(max_length=30, null=True)
-    ip_direct = models.CharField(max_length=30, null=True)
     port = models.IntegerField(null=True)
     is_active = models.BooleanField()
+    installation_origin = models.CharField(max_length=50, null=True)
+    installation_target = models.CharField(max_length=50, null=True)
 

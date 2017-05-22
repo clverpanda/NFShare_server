@@ -11,6 +11,7 @@ def index(request):
 
 def add_share(request):
     result_dict = {}
+    share_pin = None
     try:
         if request.method == 'POST':
             req = simplejson.loads(request.raw_post_data)
@@ -19,8 +20,8 @@ def add_share(request):
             data_type = req['data_type']
             related_data = req['related_data']
             ip = req['ip']
-            ip_direct = req['ip_direct']
             port = req['port']
+            installation = req['installation']
             pin_code = random.randint(1000, 9999)
             while True:
                 try:
@@ -29,13 +30,14 @@ def add_share(request):
                 except Transfer.DoesNotExist:
                     break
             share_pin = pin_code
-            newTransfer = Transfer(origin_phone=origin_phone, token=token, data_type= data_type,
-                                   related_data=related_data, ip=ip, ip_direct=ip_direct, port=port,
-                                   share_pin=share_pin)
-            newTransfer.save()
+            new_transfer = Transfer(origin_phone=origin_phone, token=token, data_type= data_type,
+                                    related_data=related_data, ip=ip, port=port, share_pin=share_pin,
+                                    installation_origin=installation)
+            new_transfer.save()
     except:
         raise Http404
     result_dict['status'] = 'success'
+    result_dict['pin'] = share_pin
     json = simplejson.dumps(result_dict)
     return HttpResponse(json)
 
