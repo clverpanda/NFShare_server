@@ -43,8 +43,15 @@ def add_share(request):
 
 
 def get_share(request, share_pin):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % share_pin)
+    result_dict = {}
+    obj2transfer = None
+    try:
+        if request.method == 'POST':
+            req = simplejson.loads(request.raw_post_data)
+            pin_code = req['pin']
+            obj2transfer = Transfer.objects.filter(is_active=True).filter(share_pin=pin_code)
+    except:
+        raise Http404
 
 
 def connect_unavailable(request, transfer_id):
