@@ -47,18 +47,34 @@ def add_share(request):
 
 
 @csrf_exempt
-def get_share(request, share_pin):
-    result_dict = {}
-    obj2transfer = None
+def get_share(request):
+    result_dict = dict()
     try:
         if request.method == 'POST':
-            req = simplejson.loads(request.raw_post_data)
-            pin_code = req['pin']
-            obj2transfer = Transfer.objects.filter(is_active=True).filter(share_pin=pin_code)
+            req = simplejson.loads(request.body)
+            pin_code = req['pin_code']
+            installation = req['installation']
+            obj2transfer = Transfer.objects.filter(is_active=True).get(share_pin=pin_code)
+            obj2transfer.installation_target = installation
+            obj2transfer.save()
+            result_dict['status'] = 'success'
+            result_dict['id'] = obj2transfer.id
+            result_dict['origin_phone'] = obj2transfer.origin_phone
+            result_dict['token'] = obj2transfer.token
+            result_dict['data_type'] = obj2transfer.data_type
+            result_dict['related_data'] = obj2transfer.related_data
+            result_dict['ip'] = obj2transfer.ip
+            result_dict['port'] = obj2transfer.port
     except:
         raise Http404
+    json = simplejson.dumps(result_dict)
+    return HttpResponse(json)
 
 
 @csrf_exempt
-def connect_unavailable(request, transfer_id):
-    return HttpResponse("You're voting on question %s." % transfer_id)
+def connect_error(request, transfer_id):
+    transfer = Transfer.objects.get(pk=transfer_id)
+    message_title = "与对方手机未能建立近距离连接"
+    message_content = "请选择是否通过云服务传输"
+    push_normal_message(transfer.installation_origin, message_title, message_content)
+    return HttpResponse("success")
