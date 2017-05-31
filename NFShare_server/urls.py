@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^share/$', views.add_share, name='share'),
     url(r'^get/$', views.get_share, name='get'),
     url(r'^callback/conn_err/(?P<transfer_id>[0-9]+)/$', views.connect_error, name='unavailable'),
+    url(r'^callback/upload_done/(?P<transfer_id>[0-9]+)/$', views.upload_done, name='uploaddone')
 ]

@@ -3,7 +3,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from .models import Transfer
 import simplejson as simplejson
-from .pushmessage import push_normal_message, push_tencent_message
+from .pushmessage import push_conn_err_message, push_upload_done_message
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -15,6 +15,7 @@ def index(request):
 def add_share(request):
     result_dict = {}
     share_pin = None
+    result_id = None
     try:
         if request.method == 'POST':
             req = simplejson.loads(request.body)
@@ -37,11 +38,13 @@ def add_share(request):
                                     related_data=related_data, ip=ip, port=port, share_pin=share_pin,
                                     installation_origin=installation, is_active=True)
             new_transfer.save()
+            result_id = new_transfer.id
     except Exception as ex:
         print(ex)
         raise Http404
     result_dict['status'] = 'success'
     result_dict['pin'] = share_pin
+    result_dict['id'] = result_id
     json = simplejson.dumps(result_dict)
     return HttpResponse(json)
 
@@ -74,7 +77,12 @@ def get_share(request):
 @csrf_exempt
 def connect_error(request, transfer_id):
     transfer = Transfer.objects.get(pk=transfer_id)
-    message_title = "与对方手机未能建立近距离连接"
-    message_content = "请选择是否通过云服务传输"
-    push_normal_message(transfer.installation_origin, message_title, message_content)
+    push_conn_err_message(transfer.installation_origin, transfer_id)
+    return HttpResponse("success")
+
+
+@csrf_exempt
+def upload_done(request, transfer_id):
+    transfer = Transfer.objects.get(pk=transfer_id)
+    push_upload_done_message(transfer.installation_target, transfer.related_data)
     return HttpResponse("success")
