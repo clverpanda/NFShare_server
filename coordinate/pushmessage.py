@@ -27,7 +27,7 @@ def prepare_message_callback_conn_err(transfer_id):
 
 
 def prepare_message_callback_upload_done(transfer_related_data):
-    msg_content = prepare_message_content("收到来自云端的任务", "任务已经放入任务列表", "com.clverpanda.nfshare.uploaddone", None)
+    msg_content = prepare_message_content("收到来自云端的任务", "任务已经放入任务列表", "com.clverpanda.nfshare.uploaddone", False)
     msg_content['description'] = transfer_related_data
     return msg_content
 
